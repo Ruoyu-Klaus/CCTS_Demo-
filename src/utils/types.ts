@@ -16,7 +16,14 @@ interface ValidateConfigs {
 }
 
 interface Project {
+  id: string
   title: string
   description: string
   people: number
+  status: ProjectStatus
+}
+
+enum ProjectStatus {
+  ACTIVE = 'ACTIVE',
+  DONE = 'DONE',
 }
