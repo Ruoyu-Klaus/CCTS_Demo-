@@ -2,6 +2,7 @@ import { ProjectStatus } from './utils/enum'
 import { BaseState } from './core/index'
 import ProjectInput from './components/ProjectInput'
 import ProjectList from './components/ProjectList'
+import { Singleton } from './core/decorators/singleton'
 
 class ProjectImplementation implements Project {
   id: string
@@ -23,19 +24,12 @@ class ProjectImplementation implements Project {
     this.status = status
   }
 }
+@Singleton
 export class ProjectState extends BaseState<Project> {
   private projects: Project[] = []
-  private static instance: ProjectState
+
   constructor() {
     super()
-  }
-
-  static getInstance(): ProjectState {
-    if (this.instance) {
-      return this.instance
-    }
-    this.instance = new ProjectState()
-    return this.instance
   }
 
   add(payload: Partial<Project>) {
@@ -60,7 +54,7 @@ export class ProjectState extends BaseState<Project> {
     return this.projects
   }
 }
-const projectState = ProjectState.getInstance()
+const projectState = new ProjectState()
 
 new ProjectInput(projectState)
 new ProjectList(projectState, ProjectStatus.ACTIVE)

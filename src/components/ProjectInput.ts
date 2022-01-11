@@ -1,16 +1,9 @@
 import AutoBind from '../core/decorators/autoBind'
-import { BaseComponent, validate } from '../core/index'
+import ValidateWith from '../core/decorators/validateWith'
+import { BaseComponent } from '../core/index'
 import { ProjectState } from '../index'
 
-const ValidateConfigs: ValidateConfigs = {}
-function ValidateWith(validateConfig: ValidateConfig) {
-  return function (_: any, proName: string) {
-    ValidateConfigs[proName] = {
-      ...ValidateConfigs[proName],
-      ...validateConfig,
-    }
-  }
-}
+const validateConfigs: ValidateConfigs = {}
 
 export default class ProjectInput extends BaseComponent<
   HTMLDivElement,
@@ -22,14 +15,16 @@ export default class ProjectInput extends BaseComponent<
 
   projectState: ProjectState
 
-  @ValidateWith({ required: true, maxLength: 20 })
+  @ValidateWith(validateConfigs, { required: true, maxLength: 20 })
   title: string = ''
-  @ValidateWith({ required: true, maxLength: 100, minLength: 2 })
+  @ValidateWith(validateConfigs, {
+    required: true,
+    maxLength: 100,
+    minLength: 2,
+  })
   description: string = ''
-  @ValidateWith({ required: true, max: 20, min: 0 })
+  @ValidateWith(validateConfigs, { required: true, max: 20, min: 0 })
   people: number = 0
-
-  validateConfigs: ValidateConfigs = {}
 
   constructor(projectState: ProjectState) {
     super('project-input', 'app', true, 'project-form')
@@ -50,7 +45,7 @@ export default class ProjectInput extends BaseComponent<
     this.description = description
     this.people = people
 
-    if (!validate(this, ValidateConfigs)) {
+    if (!this.validate(validateConfigs)) {
       console.log('Please enter correct value')
       return
     }

@@ -1,8 +1,4 @@
-export default function AutoBind(
-  _: any,
-  _1: string,
-  descriptor: PropertyDescriptor
-) {
+export function AutoBind(_: any, _1: string, descriptor: PropertyDescriptor) {
   return {
     configurable: true,
     enumerable: false,
@@ -11,3 +7,4 @@ export default function AutoBind(
     },
   }
 }
+export default AutoBind

@@ -31,6 +31,58 @@ export abstract class BaseComponent<
   }
   abstract configure(): void
   abstract renderContent(): void
+
+  validate(ValidateConfigs: ValidateConfigs) {
+    const _this: any = this
+    if (!ValidateConfigs) return true
+    let isValid = true
+    for (const propName in ValidateConfigs) {
+      const requirements = ValidateConfigs[propName]
+      const value = _this[propName]
+      const { required, maxLength, minLength, max, min } = requirements
+      if (required && !_this[propName]) {
+        ValidateConfigs[propName] = {
+          ...ValidateConfigs[propName],
+          error: 'Not empty',
+        }
+        isValid = false
+      }
+      if (typeof value === 'string') {
+        if (typeof maxLength === 'number' && value.length > maxLength) {
+          ValidateConfigs[propName] = {
+            ...ValidateConfigs[propName],
+            error: 'Too Long',
+          }
+          isValid = false
+        }
+        if (typeof minLength === 'number' && value.length < minLength) {
+          ValidateConfigs[propName] = {
+            ...ValidateConfigs[propName],
+            error: 'Too Short',
+          }
+
+          isValid = false
+        }
+      }
+      if (typeof value === 'number') {
+        if (typeof max === 'number' && value > max) {
+          ValidateConfigs[propName] = {
+            ...ValidateConfigs[propName],
+            error: 'Bigger than Maximum number',
+          }
+          isValid = false
+        }
+        if (typeof min === 'number' && value < min) {
+          ValidateConfigs[propName] = {
+            ...ValidateConfigs[propName],
+            error: 'Lower than Minimum number',
+          }
+          isValid = false
+        }
+      }
+    }
+    return isValid
+  }
 }
 
 export abstract class BaseState<T> {
@@ -43,55 +95,4 @@ export abstract class BaseState<T> {
   abstract add(payload: Partial<T>): void
 
   abstract getState(): T | Array<T>
-}
-
-export const validate = (obj: any, ValidateConfigs: ValidateConfigs) => {
-  if (!ValidateConfigs) return true
-  let isValid = true
-  for (const propName in ValidateConfigs) {
-    const requirements = ValidateConfigs[propName]
-    const value = obj[propName]
-    const { required, maxLength, minLength, max, min } = requirements
-    if (required && !obj[propName]) {
-      ValidateConfigs[propName] = {
-        ...ValidateConfigs[propName],
-        error: 'Not empty',
-      }
-      isValid = false
-    }
-    if (typeof value === 'string') {
-      if (typeof maxLength === 'number' && value.length > maxLength) {
-        ValidateConfigs[propName] = {
-          ...ValidateConfigs[propName],
-          error: 'Too Long',
-        }
-        isValid = false
-      }
-      if (typeof minLength === 'number' && value.length < minLength) {
-        ValidateConfigs[propName] = {
-          ...ValidateConfigs[propName],
-          error: 'Too Short',
-        }
-
-        isValid = false
-      }
-    }
-    if (typeof value === 'number') {
-      if (typeof max === 'number' && value > max) {
-        ValidateConfigs[propName] = {
-          ...ValidateConfigs[propName],
-          error: 'Bigger than Maximum number',
-        }
-        isValid = false
-      }
-      if (typeof min === 'number' && value < min) {
-        ValidateConfigs[propName] = {
-          ...ValidateConfigs[propName],
-          error: 'Lower than Minimum number',
-        }
-        isValid = false
-      }
-    }
-  }
-  return isValid
 }
