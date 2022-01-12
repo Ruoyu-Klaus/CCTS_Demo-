@@ -1,6 +1,7 @@
 import { BaseComponent } from '../core/index'
 import { ProjectStatus } from '../utils/enum'
 import { ProjectState } from '../index'
+import ProjectItem from './ProjectItem'
 
 export default class ProjectList extends BaseComponent<
   HTMLDivElement,
@@ -31,11 +32,10 @@ export default class ProjectList extends BaseComponent<
   }
   renderContent(): void {
     const list = this.targetElement.querySelector('ul')! as HTMLUListElement
+    list.id = 'project-ul'
     list.innerHTML = ''
     this.projects.forEach(project => {
-      const li = document.createElement('li')
-      li.innerText = `${project.title} + ${project.description} + ${project.people}`
-      list.appendChild(li)
+      new ProjectItem('project-ul', project)
     })
   }
 }
