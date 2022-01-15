@@ -1,9 +1,10 @@
 import { BaseComponent } from '../core/index'
+import AutoBind from '../core/decorators/autoBind'
 
-export default class ProjectItem extends BaseComponent<
-  HTMLUListElement,
-  HTMLLIElement
-> {
+export default class ProjectItem
+  extends BaseComponent<HTMLUListElement, HTMLLIElement>
+  implements Draggable
+{
   private _project: Project
 
   constructor(hookElementId: string, project: Project) {
@@ -12,12 +13,26 @@ export default class ProjectItem extends BaseComponent<
     this.configure()
     this.renderContent()
   }
-  configure() {}
+  configure() {
+    this.targetElement.setAttribute('draggable', 'true')
+    this.targetElement.addEventListener('dragstart', this.dragStartHandler)
+    this.targetElement.addEventListener('dragend', this.dragEndHandler)
+  }
   renderContent() {
     this.targetElement.querySelector('h2')!.textContent = this._project.title
     this.targetElement.querySelector('h3')!.textContent =
       this._project.people.toString()
     this.targetElement.querySelector('p')!.textContent =
       this._project.description
+  }
+
+  @AutoBind
+  dragStartHandler(event: DragEvent) {
+    event.dataTransfer?.setData('text/plain', this._project.id)
+    event.dataTransfer!.effectAllowed = 'move'
+  }
+  @AutoBind
+  dragEndHandler(_: DragEvent) {
+    console.log('end')
   }
 }

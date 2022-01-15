@@ -94,5 +94,7 @@ export abstract class BaseState<T> {
 
   abstract add(payload: Partial<T>): void
 
+  abstract update(payload: Partial<T>): void
+
   abstract getState(): T | Array<T>
 }

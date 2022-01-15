@@ -10,6 +10,7 @@ class ProjectImplementation implements Project {
   description: string
   people: number
   status: ProjectStatus
+
   constructor(
     id: string,
     title: string,
@@ -23,10 +24,14 @@ class ProjectImplementation implements Project {
     this.people = people
     this.status = status
   }
+
+  update(values: Partial<Project>) {
+    Object.assign(this, { ...values })
+  }
 }
 @Singleton
 export class ProjectState extends BaseState<Project> {
-  private projects: Project[] = []
+  private projects: ProjectImplementation[] = []
 
   constructor() {
     super()
@@ -34,17 +39,30 @@ export class ProjectState extends BaseState<Project> {
 
   add(payload: Partial<Project>) {
     const { title, description, people } = payload
-    if (title && description && people) {
-      const project = new ProjectImplementation(
-        Math.random().toString() + Date.now(),
-        title,
-        description,
-        people
-      )
-      this.projects.push(project)
-    } else {
+    if (!title || !description || !people) {
       return
     }
+    const project = new ProjectImplementation(
+      Math.random().toString() + Date.now(),
+      title,
+      description,
+      people,
+      ProjectStatus.ACTIVE
+    )
+    this.projects.push(project)
+    this._executeListeners()
+  }
+
+  update(payload: Partial<Project>) {
+    const { id, ...rest } = payload
+    const project = this.projects.find(p => p.id === id)
+    if (project) {
+      project.update(rest)
+    }
+    this._executeListeners()
+  }
+
+  private _executeListeners() {
     for (const listenerFn of this.listeners) {
       listenerFn(this.projects.slice())
     }
