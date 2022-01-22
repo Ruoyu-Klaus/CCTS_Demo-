@@ -91,7 +91,11 @@ export abstract class BaseState<T> {
   addListener(listenerFn: listenerFn<T>) {
     this.listeners.push(listenerFn)
   }
-
+  _executeListeners(states: any) {
+    for (const listenerFn of this.listeners) {
+      listenerFn(states)
+    }
+  }
   abstract add(payload: Partial<T>): void
 
   abstract update(payload: Partial<T>): void

@@ -50,22 +50,17 @@ export class ProjectState extends BaseState<Project> {
       ProjectStatus.ACTIVE
     )
     this.projects.push(project)
-    this._executeListeners()
+    this._executeListeners(this.projects.slice())
   }
 
   update(payload: Partial<Project>) {
     const { id, ...rest } = payload
+    // todo : can be optimized unchanged rendering
     const project = this.projects.find(p => p.id === id)
     if (project) {
       project.update(rest)
     }
-    this._executeListeners()
-  }
-
-  private _executeListeners() {
-    for (const listenerFn of this.listeners) {
-      listenerFn(this.projects.slice())
-    }
+    this._executeListeners(this.projects.slice())
   }
 
   getState() {

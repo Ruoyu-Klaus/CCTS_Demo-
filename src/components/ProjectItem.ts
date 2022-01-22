@@ -32,7 +32,5 @@ export default class ProjectItem
     event.dataTransfer!.effectAllowed = 'move'
   }
   @AutoBind
-  dragEndHandler(_: DragEvent) {
-    console.log('end')
-  }
+  dragEndHandler(_: DragEvent) {}
 }
